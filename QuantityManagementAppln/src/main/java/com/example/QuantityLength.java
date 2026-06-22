@@ -4,6 +4,7 @@ import java.util.Objects;
 
 public class QuantityLength {
 
+    private static final double EPSILON = 0.001;
     private final double value;
     private final LengthUnit unit;
 
@@ -77,6 +78,31 @@ public class QuantityLength {
         return addInternal(length1, length2, targetUnit);
     }
 
+    public QuantityLength add(
+            QuantityLength other,
+            LengthUnit targetUnit) {
+
+        if (other == null) {
+            throw new IllegalArgumentException("Quantity cannot be null");
+        }
+
+        if (targetUnit == null) {
+            throw new IllegalArgumentException("Target unit cannot be null");
+        }
+
+        double thisBase =
+                unit.convertToBaseUnit(this.value);
+
+        double otherBase =
+                other.unit.convertToBaseUnit(other.value);
+
+        double sumBase = thisBase + otherBase;
+
+        double result =
+                targetUnit.convertFromBaseUnit(sumBase);
+
+        return new QuantityLength(result, targetUnit);
+    }
     private static void validate(
             QuantityLength length1,
             QuantityLength length2) {
@@ -87,6 +113,18 @@ public class QuantityLength {
         }
     }
 
+    public QuantityLength convertTo(LengthUnit targetUnit) {
+
+        if (targetUnit == null) {
+            throw new IllegalArgumentException("Target unit cannot be null");
+        }
+
+        double baseValue = unit.convertToBaseUnit(value);
+        double convertedValue = targetUnit.convertFromBaseUnit(baseValue);
+
+        return new QuantityLength(convertedValue, targetUnit);
+    }
+
     @Override
     public String toString() {
         return "Quantity(" + value + ", " + unit + ")";
@@ -94,16 +132,23 @@ public class QuantityLength {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
+        if (this == obj) {
+            return true;
+        }
 
-        if (!(obj instanceof QuantityLength)) return false;
+        if (!(obj instanceof QuantityLength)) {
+            return false;
+        }
 
         QuantityLength other = (QuantityLength) obj;
 
-        double epsilon = 0.001;
+        double thisBase =
+                unit.convertToBaseUnit(value);
 
-        return Math.abs(this.value - other.value) < epsilon
-                && this.unit == other.unit;
+        double otherBase =
+                other.unit.convertToBaseUnit(other.value);
+
+        return Math.abs(thisBase - otherBase) < EPSILON;
     }
 
     @Override
