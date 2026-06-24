@@ -84,6 +84,12 @@ public class Quantity<U extends Enum<U> & IMeasurable> {
             Quantity<U> other,
             ArithmeticOperation operation) {
 
+        unit.validateOperationSupport(
+                operation.name());
+
+        other.unit.validateOperationSupport(
+                operation.name());
+
         double firstBase =
                 unit.convertToBaseUnit(value);
 
