@@ -42,12 +42,8 @@ public class Quantity<U extends IMeasurable> {
         double convertedValue =
                 targetUnit.convertFromBaseUnit(baseValue);
 
-        convertedValue =
-                Math.round(convertedValue * 100.0) / 100.0;
-
         return new Quantity<>(convertedValue, targetUnit);
     }
-
     public Quantity<U> add(Quantity<U> other) {
         return add(other, this.unit);
     }
@@ -115,7 +111,6 @@ public class Quantity<U extends IMeasurable> {
 
     @Override
     public String toString() {
-        return "Quantity(" + value +
-                ", " + unit + ")";
+        return String.format("%.2f %s", value, unit.getUnitName());
     }
 }
